@@ -15,7 +15,7 @@ button.addEventListener('click', (e) => {
 })
 
 const changeUrlMovie = (input) => {
-  let url = 'http://www.omdbapi.com/?s=' + input + '&apikey=4ee5ea8a';
+  let url = 'https://www.omdbapi.com/?s=' + input + '&apikey=4ee5ea8a';
   askAPI(url)
 }
 
