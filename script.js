@@ -11,6 +11,7 @@ button.addEventListener('click', (e) => {
   e.preventDefault()
   changeUrlMovie(input.value);
   putPlace.innerHTML = "";
+  putModal.innerHTML = "";
 })
 
 const changeUrlMovie = (input) => {
@@ -29,7 +30,6 @@ const askAPI = (url) => {
     if (requete.readyState === XMLHttpRequest.DONE){
       if (requete.status === 200) {
         let reponse = requete.response;
-        // displayResult(reponse.Search[0].Title, reponse.Search[0].Poster, reponse.Search[0].Year)
         reponse.Search.forEach(element => {
           displayResult(element.Title, element.Poster, element.Year);
           askNewAPI(element.imdbID)
@@ -54,16 +54,15 @@ const askNewAPI = (id) => {
       if (requete.status === 200) {
         let reponse = requete.response;
           displayModalInfo(reponse.Title, reponse.Poster, reponse.Plot, reponse.Released);
+          getReadyModal();
+
         }
     } else {
       alert('Un problème est intervenu');
     };
-    getReadyModal();
-  };
-};
+  };};
 
 ////Display Card + Modal
-
 
 const displayResult = (title, cover, year) => {
   let putPlace = document.querySelector("#putPlace")
@@ -142,12 +141,9 @@ const intersectionAppear = () => {
 const getReadyModal = () => {
   var modal = document.querySelectorAll("#myModal");
   var myButtons = document.querySelectorAll("#myButton");
-  // getInfoModal();
-  console.log(modal)
 
     for(let i in myButtons){
     myButtons[i].addEventListener('click', () => {
-        console.log(myButtons[i])
         modal[i].style.display = "block";
         var span = document.getElementsByClassName("close")[i];
       
