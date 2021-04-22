@@ -10,7 +10,6 @@ var url = ""
 button.addEventListener('click', (e) => {
   e.preventDefault()
   changeUrlMovie(input.value);
-  // changeUrlID(input.value);
   putPlace.innerHTML = "";
 })
 
@@ -33,9 +32,9 @@ const askAPI = (url) => {
         // displayResult(reponse.Search[0].Title, reponse.Search[0].Poster, reponse.Search[0].Year)
         reponse.Search.forEach(element => {
           displayResult(element.Title, element.Poster, element.Year);
+          askNewAPI(element.imdbID)
         })
         intersectionAppear();
-        getReadyModal();
       }
       
     } else {
@@ -44,19 +43,30 @@ const askAPI = (url) => {
   };
 };
 
-const getInfoModal = () =>{
-  
+const askNewAPI = (id) => {
+  let url = 'https://www.omdbapi.com/?i=' + id + '&apikey=4ee5ea8a';
+  let requete = new XMLHttpRequest();
+  requete.open('GET', url);
+  requete.responseType = 'json';
+  requete.send();
+  requete.onload = function(){
+    if (requete.readyState === XMLHttpRequest.DONE){
+      if (requete.status === 200) {
+        let reponse = requete.response;
+          displayModalInfo(reponse.Title, reponse.Poster, reponse.Plot, reponse.Released);
+        }
+    } else {
+      alert('Un problème est intervenu');
+    };
+    getReadyModal();
+  };
 };
 
-// const changeUrlID = (input) => {
-//   let urlId = 'http://www.omdbapi.com/?s=' + input + '&apikey=4ee5ea8a';
-//   console.log(urlId);
-// }
+////Display Card + Modal
 
 
 const displayResult = (title, cover, year) => {
   let putPlace = document.querySelector("#putPlace")
-  let putModal = document.querySelector("#putModal")
   putPlace.innerHTML +=`
   <div id="card" class="container mt-5">
     <div class="row">
@@ -76,10 +86,16 @@ const displayResult = (title, cover, year) => {
       </div>
     </div>
   </div>`
+};
+
+
+const displayModalInfo = (title, cover, resume, date) => {
+  let putModal = document.querySelector("#putModal")
   putModal.innerHTML +=`
   <!-- Modal content -->
   <div id="myModal" class="modal">
     <div class="modal-content">
+
       <span class="close">&times;</span>
       <div id="modal" class="container mt-3">
         <div class="row">
@@ -91,11 +107,8 @@ const displayResult = (title, cover, year) => {
               <div class="col-md-8 px-5">
                 <div class="card-body m-3">
                   <h5 class="card-title">${title}</h5>
-                  <p class="card-text">le 19/04/2012</p>
-                  <p class="card-text">Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime mollitia,
-                    molestiae quas vel sint commodi repudiandae consequuntur voluptatum laborum
-                    numquam blanditiis harum quisquam eius sed odit fugiat iusto fuga praesentium
-                    optio, eaque rerum! Provident similique accusantium nemo autem.</p>
+                  <p class="card-text">${date}</p>
+                  <p class="card-text">${resume}</p>
                 </div>
               </div>
             </div>
@@ -104,8 +117,7 @@ const displayResult = (title, cover, year) => {
       </div>
     </div>
   </div>
-  `
-}
+  `}
 // intersection Observer
 
 const intersectionAppear = () => {
@@ -125,17 +137,17 @@ const intersectionAppear = () => {
 })
 }
 
-// Modale//////
-// 1/clique sur un bouton
+// Add Event listener Modale//////
 
 const getReadyModal = () => {
   var modal = document.querySelectorAll("#myModal");
   var myButtons = document.querySelectorAll("#myButton");
-  getInfoModal();
+  // getInfoModal();
+  console.log(modal)
 
     for(let i in myButtons){
     myButtons[i].addEventListener('click', () => {
-        console.log('yes')
+        console.log(myButtons[i])
         modal[i].style.display = "block";
         var span = document.getElementsByClassName("close")[i];
       
@@ -150,7 +162,3 @@ const getReadyModal = () => {
   } )
   }
 }
-
-
-// 2/ Récupérer l'ID
-// 2/ Retrouver la description
