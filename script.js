@@ -11,7 +11,6 @@ button.addEventListener('click', (e) => {
   e.preventDefault()
   changeUrlMovie(input.value);
   putPlace.innerHTML = "";
-  putModal.innerHTML = "";
 })
 
 const changeUrlMovie = (input) => {
@@ -31,8 +30,7 @@ const askAPI = (url) => {
       if (requete.status === 200) {
         let reponse = requete.response;
         reponse.Search.forEach(element => {
-          displayResult(element.Title, element.Poster, element.Year);
-          askNewAPI(element.imdbID)
+          displayResult(element.Title, element.Poster, element.Year, element.imdbID);
         })
         intersectionAppear();
       }
@@ -53,9 +51,8 @@ const askNewAPI = (id) => {
     if (requete.readyState === XMLHttpRequest.DONE){
       if (requete.status === 200) {
         let reponse = requete.response;
-          displayModalInfo(reponse.Title, reponse.Poster, reponse.Plot, reponse.Released);
-          getReadyModal();
-
+          displayModalInfo(reponse.Title, reponse.Poster, reponse.Plot, reponse.Released)
+          // getReadyModal();
         }
     } else {
       alert('Un problème est intervenu');
@@ -64,7 +61,7 @@ const askNewAPI = (id) => {
 
 ////Display Card + Modal
 
-const displayResult = (title, cover, year) => {
+const displayResult = (title, cover, year, imdbID) => {
   let putPlace = document.querySelector("#putPlace")
   putPlace.innerHTML +=`
   <div id="card" class="container mt-5">
@@ -78,7 +75,7 @@ const displayResult = (title, cover, year) => {
             <div class="card-body">
               <h5 class="card-title">${title}</h5>
               <p class="card-text">${year}</p>
-            <button id="myButton" type="submit" class="btn btn-primary">En savoir plus</button>        </form>
+            <button id="myButton" class="btn btn-primary" type="submit" onclick="askNewAPI(\'${imdbID}'\);" >En savoir plus</button>        </form>
             </div>
           </div>
         </div>
@@ -89,14 +86,12 @@ const displayResult = (title, cover, year) => {
 
 
 const displayModalInfo = (title, cover, resume, date) => {
-  let putModal = document.querySelector("#putModal")
-  putModal.innerHTML +=`
+  let popup = document.querySelector("#popup");
+  popup.innerHTML =`
   <!-- Modal content -->
-  <div id="myModal" class="modal">
+  <div id="modal">
     <div class="modal-content">
-
       <span class="close">&times;</span>
-      <div id="modal" class="container mt-3">
         <div class="row">
           <div class="card mb-3" style="max-width: 740px;">
             <div class="row g-0";>
@@ -113,48 +108,62 @@ const displayModalInfo = (title, cover, resume, date) => {
             </div>
           </div>
         </div>
-      </div>
     </div>
   </div>
-  `}
+  `
+  modal.style.display = "block";
+  var span = document.getElementsByClassName("close")[0];
+  console.log(span)
+  span.onclick = function() {
+    console.log("Jules")
+    modal.style.display = "none";
+  }
+    window.onclick = function(event){
+    if (event.target == modal) {
+      modal.style.display = "none";
+    }
+  }
+}
+
+
 // intersection Observer
 
 const intersectionAppear = () => {
-  let observer = new IntersectionObserver(function(entries) {
-    entries.forEach(function(entries){
-      if(entries.intersectionRatio> 0.5){
-        entries.target.classList.remove('not-visible')
-      }
+    let observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entries){
+        if(entries.intersectionRatio> 0.5){
+          entries.target.classList.remove('not-visible')
+        }
+      })
+    }, {
+      threshold:[0.5]
     })
-  }, {
-    threshold:[0.5]
+    let items =  document.querySelectorAll('#card')
+    items.forEach(function(item){
+      item.classList.add('not-visible')
+      observer.observe(item)
   })
-  let items =  document.querySelectorAll('#card')
-  items.forEach(function(item){
-    item.classList.add('not-visible')
-    observer.observe(item)
-})
 }
 
 // Add Event listener Modale//////
 
-const getReadyModal = () => {
-  var modal = document.querySelectorAll("#myModal");
-  var myButtons = document.querySelectorAll("#myButton");
+// const getReadyModal = () => {
+//   var modal = document.querySelectorAll("#myModal");
+//   var myButtons = document.querySelectorAll("#myButton");
 
-    for(let i in myButtons){
-    myButtons[i].addEventListener('click', () => {
-        modal[i].style.display = "block";
-        var span = document.getElementsByClassName("close")[i];
+//     for(let i in myButtons){
+//     myButtons[i].addEventListener('click', () => {
+//         modal[i].style.display = "block";
+//         var span = document.getElementsByClassName("close")[i];
       
-      span.onclick = function() {
-        modal[i].style.display = "none";
-      }
-            window.onclick = function(event) {
-        if (event.target == modal) {
-          modal[i].style.display = "none";
-        }
-      }
-  } )
-  }
-}
+//       span.onclick = function() {
+//         modal[i].style.display = "none";
+//       }
+//             window.onclick = function(event) {
+//         if (event.target == modal) {
+//           modal[i].style.display = "none";
+//         }
+//       }
+//   } )
+//   }
+// }
